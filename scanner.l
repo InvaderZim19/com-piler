@@ -1,5 +1,3 @@
-
-
 %{
 
 #include "lyutils.h"
@@ -24,8 +22,11 @@ EXPONENT        ([Ee][+-]?{DIGIT}+)
 NUMBER          ({MANTISSA}{EXPONENT}?)
 NOTNUMBER       ({MANTISSA}[Ee][+-]?)
 IDENT           ({LETTER}({LETTER}|{DIGIT})*)
-TOK_STRINGCON	(’([^\\’\n]|\\[\\’"0nt])’)
-TOK_CHARCON		(\"([^\\"\n]|\\[\\’"0nt])*\")
+NOTIDENT		({DIGIT}+{LETTER})
+NOTSTRING		(\"([^\\"\n]|\\[\\’"0nt])*)
+NOTCHAR			(’([^\\’\n]|\\[\\’"0nt]))
+TOK_STRINGCON	(\"([^\\’\n]|\\[\\’"0nt])\")
+TOK_CHARCON		('([^\\"\n]|\\[\\’"0nt])*')
 TOK_INTCON		({DIGIT}+)
 %%
 
@@ -41,6 +42,8 @@ TOK_INTCON		({DIGIT}+)
 "^"             { return (yylval_token('^')); }
 "("             { return (yylval_token('(')); }
 ")"             { return (yylval_token(')')); }
+"{"             { return (yylval_token('{')); }
+"}"             { return (yylval_token('}')); }
 ";"             { return (yylval_token(';')); }
 "%"				{ return (yylval_token('%')); }
 "!"				{ return (yylval_token('!')); }
@@ -73,10 +76,18 @@ TOK_INTCON		({DIGIT}+)
 "new"			{ return (yylval_token(TOK_NEW)); }
 
 {TOK_STRINGCON}	{ return (yylval_token(TOK_STRINGCON)); }
+{TOK_INTCON}	{ return (yylval_token(TOK_INTCON)); }
 {TOK_CHARCON}	{ return (yylval_token(TOK_CHARCON)); }
 {NUMBER}		{ return (yylval_token(TOK_INTCON)); }
 {IDENT}			{ return (yylval_token(TOK_IDENT)); }
-{NOTNUMBER}     { lexer_badtoken(yytext); }
+{NOTNUMBER}     { lexer_badtoken(yytext);
+					return (yylval_token(TOK_INT)); }
+{NOTCHAR}		{ lexer_badtoken(yytext);
+					return (yylval_token(TOK_CHAR)); }
+{NOTSTRING}		{ lexer_badtoken(yytext);
+					return (yylval_token(TOK_STRING)); }
+{NOTIDENT}		{ lexer_badtoken(yytext);
+					return (yylval_token(TOK_IDENT)); }
 .               { lexer_badchar(*yytext); }
 
 %%
