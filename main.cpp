@@ -26,14 +26,17 @@ using namespace std;
 #include "stringset.h"
 #include "astree.h"
 #include "lyutils.h"
+#include "symtable.h"
 
 const string CPP = "/usr/bin/cpp";
 const size_t LINESIZE = 1024;
 extern int yy_flex_debug;
 extern FILE* yyin;
+extern astree* yyparse_astree;
 FILE* strFile;
 FILE* tokFile;
 FILE* astFile;
+FILE* symFile;
 
 // used https://www.safaribooksonline.com/library/view/c-cookbook/0596007612/ch10s17.html for reference
 // parses the filename without the suffix and adds a new extension
@@ -111,6 +114,11 @@ int main (int argc, char** argv) {
       changeExt(str, "str");
       strFile = fopen(str.c_str(), "w");
 
+      // creates the program.str file
+      std::string sym(filen);
+      changeExt(sym, "sym");
+      symFile = fopen(sym.c_str(), "w");
+
       // preprocesses the program using CPP
       if(dCheck == false) {
           command = CPP + " " + filename;
@@ -138,9 +146,16 @@ int main (int argc, char** argv) {
          int pclose_rc = pclose (yyin);
          eprint_status (command.c_str(), pclose_rc);
          dump_stringset(strFile);
+         dump_file(astFile, yyparse_astree);
+         SymbolTable* symbol = new SymbolTable(NULL);
+         symbol->traverse(yyparse_astree, symbol);
+         symbol->dump_sym(symFile, 0);
+
+         // closing all the files afterwards
          fclose(strFile);
          fclose(tokFile);
          fclose(astFile);
+         fclose(symFile);
       }
    }  
    return get_exitstatus();
