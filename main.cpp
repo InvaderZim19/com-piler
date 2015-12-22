@@ -26,13 +26,14 @@ using namespace std;
 #include "stringset.h"
 #include "astree.h"
 #include "lyutils.h"
-#include "parser.h"
 
 const string CPP = "/usr/bin/cpp";
 const size_t LINESIZE = 1024;
 extern int yy_flex_debug;
 extern FILE* yyin;
+FILE* strFile;
 FILE* tokFile;
+FILE* astFile;
 
 // used https://www.safaribooksonline.com/library/view/c-cookbook/0596007612/ch10s17.html for reference
 // parses the filename without the suffix and adds a new extension
@@ -69,7 +70,6 @@ int main (int argc, char** argv) {
          yy_flex_debug = 1;
          break;
       case 'y':
-         yyparse();
          yydebug = 1;
          break;
       case '@':
@@ -97,6 +97,10 @@ int main (int argc, char** argv) {
       string command;
       char* filen = basename(filename);
 
+      std::string ast(filen);
+      changeExt(ast, "ast");
+      astFile = fopen(ast.c_str(), "w");
+
       // creates the program.tok file
       std::string tok(filen);
       changeExt(tok, "tok");
@@ -105,7 +109,7 @@ int main (int argc, char** argv) {
       // creates the program.str file
       std::string str(filen);
       changeExt(str, "str");
-      FILE* strfile = fopen(str.c_str(), "w");
+      strFile = fopen(str.c_str(), "w");
 
       // preprocesses the program using CPP
       if(dCheck == false) {
@@ -124,7 +128,7 @@ int main (int argc, char** argv) {
 
          // loops through file adding tokens to program.tok and creating astree. stops at end of file
          int z; 
-         while((z = yylex())){
+         while((z = yyparse())){
             if(z == YYEOF){
                break;
             }
@@ -133,9 +137,10 @@ int main (int argc, char** argv) {
          // after file opens, interns all the strings, then dumps the hash table into a file "program".str
          int pclose_rc = pclose (yyin);
          eprint_status (command.c_str(), pclose_rc);
-         dump_stringset(strfile);
-         fclose(strfile);
+         dump_stringset(strFile);
+         fclose(strFile);
          fclose(tokFile);
+         fclose(astFile);
       }
    }  
    return get_exitstatus();
