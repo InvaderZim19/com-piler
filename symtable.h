@@ -1,60 +1,76 @@
-#ifndef __SYMTABLE_H__
-#define __SYMTABLE_H__
+/* Karl Cassel (1372617) kcassel
+   Wesly Lim   (1366779) welim
+   Program 5
+   11/24/2015 */
+   
+#ifndef __SYMBOLTABLE__
+#define __SYMBOLTABLE__
 
-#include <stdio.h>
 #include <string>
+#include <unordered_map>
+#include <bitset>
 #include <vector>
-#include <map>
-
+#include <queue>
 using namespace std;
+extern FILE *symfile;
 
-class astree;
-class SymbolTable {
+enum { ATTR_void, ATTR_bool, ATTR_char, ATTR_int, ATTR_null,
+       ATTR_string, ATTR_struct, ATTR_array, ATTR_function,
+       ATTR_prototype, ATTR_variable, ATTR_field, ATTR_typeid,
+       ATTR_param, ATTR_lval, ATTR_const, ATTR_vreg, ATTR_vaddr,
+       ATTR_bitset_size,
+};
+using attr_bitset = bitset<ATTR_bitset_size>;
 
-  int block_nr;
-  SymbolTable* parent;
-  map<string,string> maptype;
-  map<string,int> mapfile;
-  map<string,int> mapline;
-  map<string,int> mapoffset;
-  map<string,SymbolTable*> structs;
-  map<string,SymbolTable*> scope;
+struct symbol;
+using symbol_ptr   = symbol*;
+using symbol_table = unordered_map<const string*,symbol*>;
+using symbol_entry = pair<const string*,symbol*>;
 
+struct astree;
 
-  
-public:
-
-  SymbolTable(SymbolTable* parent);
- // SymbolTable* enterBlock();
-  //SymbolTable* enterFunction(string name,
-  //                           string signature, int filenr, int linenr, int offset);
-  
-  void insert_symbol(string name, string type, int filenr, int linenr, int offset);
-
-  //void addStruct(string name);
-
-  void dump_sym(FILE* symfile, int depth);
-
- // string lookup(string name);
-
-  //SymbolTable* lookup2(string name);
-  SymbolTable* blockCheck();
-
- //string parentFunction(SymbolTable* innerScope);
-
-  void traverse(astree* node, SymbolTable* symtab);
-  string typeChecker(astree* node, SymbolTable* symtab);
-  void insert_Struct(string n);
-  SymbolTable* lookup_Struct(string n);
-  string lookup_Map(string n);
-  //static int N;
-
-  //static vector<string> parseSignature(string signature);
-
-
-  
+struct symbol {
+   attr_bitset attributes;
+   symbol_table *fields;
+   const string* struct_name;
+   size_t filenr, linenr, offset;
+   size_t blocknr;
+   vector<symbol*>* parameters;
+   astree* node;
+   astree* block;
 };
 
+symbol* createSymbol(astree* node);
+bool addSymbol(symbol_table table, symbol_entry entry);
+void traverseBlock();
+void enterBlock(astree* root);
+int traverseTree(astree* root);
+astree* checkNodeType(astree* node);
+symbol_entry createStruct(astree* struct_node);
+symbol_entry createField(astree* field_node);
+symbol_entry createVar(astree* vardecl_node);
+symbol_entry createProto(astree* proto_node);
+symbol_entry createFunc(astree* func_node);
+void checkTypeID(astree* node);
+void checkVardecl(astree* root);
+void checkFunction(const string* lexinfo, symbol* sym);
+void checkProto(const string* lexinfo, symbol* sym);
 
+void compVardecl(astree* root);
+void compReturn(astree* root);
+void compReturnVoid();
+void compAsg(astree* root);
+void compEQ(astree* root);
+void compComparison(astree* root);
+void compBinaryArith(astree* root);
+void compUniArith(astree* root);
 
+void compOrd(astree* root);
+void compChar(astree* root);
+void compNew(astree* root);
+void compArray(astree* root);
+void compCall(astree* root);
+void compVar(astree* root);
+void compIndex(astree* root);
+void compIfWhile(astree* root);
 #endif

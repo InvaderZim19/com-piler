@@ -1,0 +1,15 @@
+   __assert_fail (5.23.5) {0} void prototype 
+      putb (5.24.5) {0} void prototype 
+         putc (5.25.5) {0} void prototype 
+            puti (5.26.5) {0} void prototype 
+               puts (5.27.5) {0} void prototype 
+               endl (5.28.5) {0} void prototype 
+               getc (5.29.4) {0} int prototype 
+               getw (5.30.7) {0} string prototype 
+               getln (5.31.7) {0} string prototype 
+               getargv (5.32.9) {0} string array prototype 
+                  exit (5.33.5) {0} void prototype 
+                     n (6.7.13) {0} int variable param lval 
+fac (6.7.4) {0} int function 
+                     f (6.8.4) {0} int variable lval 
+                        n (6.15.4) {0} int variable lval 

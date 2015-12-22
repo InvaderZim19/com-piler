@@ -1,0 +1,48 @@
+void  ____assert_fail (
+        char*  _0_expr,
+        char*  _0_file,
+        int  _0_line);
+void  __putb (
+        char  _0_b);
+void  __putc (
+        char  _0_c);
+void  __puti (
+        int  _0_i);
+void  __puts (
+        char*  _0_s);
+void  __endl ();
+int  __getc ();
+char*  __getw ();
+char*  __getln ();
+char* *  __getargv ();
+void  __exit (
+        int  _0_status);
+int  __fac (
+        int  _0_n)
+{
+        __f = 1;
+while_6_9_0:;
+        char b1 = __n > 1;
+        if (!b0) goto break_6_9_0;
+        int i2 = __f * __n;
+        __f = i0;
+        int i3 = __n - 1;
+        __n = i0;
+        goto while_6_9_0;
+break_6_9_0:;
+        return __f;
+}
+void __ocmain (void)
+{
+        __n = 1;
+while_6_16_0:;
+        char b4 = __n <= 5;
+        if (!b0) goto break_6_16_0;
+        int i5 = __fac(__n);
+        __puti(i0);
+        __endl();
+        int i6 = __n + 1;
+        __n = i0;
+        goto while_6_16_0;
+break_6_16_0:;
+}

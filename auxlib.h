@@ -1,3 +1,8 @@
+// Karl Cassel (kcassel@ucsc.edu)
+// Wesly Lim (welim@ucsc.edu)
+// oclib.oh
+// Program 3
+
 #ifndef __AUXLIB_H__
 #define __AUXLIB_H__
 

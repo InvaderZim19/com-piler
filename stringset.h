@@ -1,17 +1,21 @@
+// $Id: stringset.h,v 1.3 2015-03-25 19:03:01-07 - - $
+
+// header file for stringset.cpp
+
+/* Karl Cassel (1372617) kcassel
+   Wesly Lim   (1366779) welim
+   Program 3
+   stringset.h */
+
 #ifndef __STRINGSET__
 #define __STRINGSET__
 
 #include <string>
-#include <unordered_set>
-using namespace std;
 
 #include <stdio.h>
 
-#include "auxlib.h"
-
-const string* intern_stringset (const char*);
+const std::string* intern_stringset (const char*);
 
 void dump_stringset (FILE*);
 
-RCSH("$Id: stringset.h,v 1.1 2013-10-11 18:53:00-07 - - $")
 #endif
